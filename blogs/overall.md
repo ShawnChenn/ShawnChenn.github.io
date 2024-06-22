@@ -1,0 +1,12 @@
+# My Blog Posts
+
+Welcome to my blog! Here's a list of all my posts:
+
+## 2024.06
+
+- [cvpr24_GenerativeImageDynamics](link-to-post)
+- [Another Interesting Article](link-to-post)
+- [Thoughts on Technology](link-to-post)
+
+
+Feel free to explore and leave comments via emails. Happy reading!
