@@ -1,0 +1,1 @@
+- [CVPR24 Generative Image Dynamics](<a href="blogs/cvpr24_GenerativeImageDynamics.md">)
