@@ -1,46 +1,37 @@
 # Paper Title
-FreeU: Free Lunch in Diffusion U-Net
+StyleGAN knows Normal, Depth, Albedo, and More
 
 ## Authors
-Chenyang Si, Ziwei Liu
+Anand Bhattad Daniel McKee Derek Hoiem D.A. Forsyth
 
 ## Publication Venue and Date
 2024
 
 ## Summary
-This paper shows that spectral volumes are suitable for predicting motion from single images with diffusion models.
+StyleGAN has easily accessible and accurate representations of intrinsic images. Simply by finding an appropriate offset to the latent variables for each type, we make StyleGAN reveal intrinsic images of many types for a synthesized image, including: surface normal, depth maps, albedo, shading, segmentation. 
+
+No new weight learning or fine-tuning is required.
 
 ## Problem Statement
-generate natural oscillation motions from a single still image.
+whethter StyleGAN knows and represents intrinsic images.
 
 ## Methodology
 present a new approach for modeling natural oscillation dynamics from a single still picture. 
 Our image-space motion prior is represented with spectral volumes, a frequency representation of per-pixel motion trajectories, which we find to be efficient and effective for prediction with diffusion models, and which we learn from collections of real world videos. 
 
-## Future Work
-[Potential areas for future research suggested by the paper]
-
 ## To me, new knowledge
-- Motion models and motion priors.
-  [frequency-space spectral volume motion representation], this method can extract motion representation from a video sequence.
-  ``
-  [Motion representation, 2016]
-  Motion representation is a key component in many computer vision tasks, such as object tracking, video stabilization, and motion estimation.
-  ``
-  [Motion prior, 2016]
-  Motion prior is a key component in many computer vision tasks, such as object tracking, video stabilization, and motion estimation.
-  ``
-- The concept of image dynamics.
-  ``
-  [Visual vibration analysis, 2016]
-  Regular cameras can be used to record and analyze the vibrations of visible objects. Through careful temporal analysis, we relate subtle changes in video to the vibrations of recorded surfaces, and use that information to reason about the physical properties of objects and the forces that drive their motion.
-  ``
-- The concept of image dynamics.
+- It is conceptually exciting that an image generator should “know” and represent intrinsic images. 
+
+- The intrinsic images obtained from StyleGAN compare well both qualitatively and quantitatively with those obtained by using SOTA image regression techniques.
+
+- StyleGAN’s intrinsic images are robust to relighting effects, unlike SOTA methods
 
 ## Personal Thoughts
-There are many different motion representations.
-Videos as textures
-Frequency-space spectral volume motion representation
+- Other generative models
+More powerful/capable models have better intrisic images?
+
+- Practical advantages to using a generative model to produce intrinsic images. 
+
 
 ## Tags
-#Motion representation #Real-world video learning
+# Generative models # knowledge in Large models

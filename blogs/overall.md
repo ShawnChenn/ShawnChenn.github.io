@@ -2,6 +2,12 @@
 
 Welcome to my blog! Here's a list of all my posts:
 
+
+## 2024.07
+- [Arxiv Diffusion inversion]
+- [Arxiv Differential Diffusion]
+- [CVPR24 Probing the 3D Awareness of Visual Foundation Models]
+
 ## 2024.06
 
 - [CVPR24 Generative Image Dynamics](cvpr24_GenerativeImageDynamics.md)
