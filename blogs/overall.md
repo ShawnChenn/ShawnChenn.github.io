@@ -7,6 +7,8 @@ Welcome to my blog! Here's a list of all my posts:
 - [Arxiv Diffusion inversion]
 - [Arxiv Differential Diffusion]
 - [CVPR24 Probing the 3D Awareness of Visual Foundation Models]
+- [CVPR24 Freecontrol: Training-free spatial control of any text-to-image diffusion model with any condition]
+- [NeurIPS23 Learning Universal Policies via Text-Guided Video Generation]
 
 ## 2024.06
 
