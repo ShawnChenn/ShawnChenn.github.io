@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Continual Learning 记忆管理文献整理</title>
+<style>
+  :root{
+    --bg:#f7f8fa; --card:#ffffff; --text:#1f2430; --muted:#6b7280;
+    --primary:#2f6fed; --primary-light:#eaf1ff; --border:#e5e7eb;
+    --tag-replay:#2f6fed; --tag-gen:#8b5cf6; --tag-grad:#059669;
+    --tag-dual:#d97706; --tag-free:#dc2626; --tag-llm:#0891b2; --tag-survey:#6b7280;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg); color:var(--text); line-height:1.6;
+  }
+  .container{max-width:1120px; margin:0 auto; padding:32px 24px 80px;}
+  header{margin-bottom:32px;}
+  h1{font-size:28px; margin:0 0 8px; font-weight:700;}
+  .subtitle{color:var(--muted); font-size:15px;}
+  .toc{
+    display:flex; flex-wrap:wrap; gap:8px; margin:20px 0 8px;
+  }
+  .toc a{
+    text-decoration:none; font-size:13px; padding:6px 12px; border-radius:20px;
+    background:var(--primary-light); color:var(--primary); border:1px solid #d6e4ff;
+  }
+  section{margin-top:36px;}
+  .sec-title{
+    display:flex; align-items:center; gap:10px; font-size:20px; font-weight:700;
+    border-left:4px solid var(--primary); padding-left:12px; margin-bottom:6px;
+  }
+  .sec-desc{color:var(--muted); font-size:14px; margin:0 0 16px; padding-left:16px;}
+  table{
+    width:100%; border-collapse:collapse; background:var(--card);
+    border-radius:10px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.06);
+    font-size:14px;
+  }
+  thead th{
+    background:#f0f3f9; text-align:left; padding:10px 14px; font-weight:600;
+    color:#374151; border-bottom:1px solid var(--border); white-space:nowrap;
+  }
+  tbody td{padding:10px 14px; border-bottom:1px solid var(--border); vertical-align:top;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:#fafbff;}
+  .year{font-weight:700; color:var(--primary); white-space:nowrap;}
+  .venue{
+    display:inline-block; font-size:12px; padding:2px 8px; border-radius:6px;
+    background:#eef2ff; color:#4338ca; font-weight:600; white-space:nowrap;
+  }
+  .paper-title{font-weight:600;}
+  .paper-note{color:var(--muted); font-size:12.5px; display:block; margin-top:2px;}
+  .badge{
+    display:inline-block; font-size:11px; padding:2px 8px; border-radius:12px; color:#fff;
+    font-weight:600; margin-left:6px;
+  }
+  .badge-survey{background:var(--tag-survey);}
+  .badge-replay{background:var(--tag-replay);}
+  .badge-gen{background:var(--tag-gen);}
+  .badge-grad{background:var(--tag-grad);}
+  .badge-dual{background:var(--tag-dual);}
+  .badge-free{background:var(--tag-free);}
+  .badge-llm{background:var(--tag-llm);}
+  footer{margin-top:48px; color:var(--muted); font-size:12.5px; border-top:1px solid var(--border); padding-top:16px;}
+  .note-box{
+    background:#fff8e6; border:1px solid #ffe6a8; border-radius:8px; padding:12px 16px;
+    font-size:13.5px; color:#8a6116; margin-top:16px;
+  }
+  @media(max-width:640px){
+    table, thead, tbody, th, td, tr{display:block;}
+    thead{display:none;}
+    tbody tr{margin-bottom:12px; border:1px solid var(--border); border-radius:8px;}
+    tbody td{border-bottom:none; padding:8px 14px;}
+    tbody td:first-child{font-weight:700;}
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Continual Learning 记忆管理（Memory Management）相关文献整理</h1>
+    <p class="subtitle">按方法类型分类，并标注发表会议/期刊及年份 · 整理时间 2026-07-01</p>
+    <div class="toc">
+      <a href="#survey">综述</a>
+      <a href="#rehearsal">经验回放 / 样本缓冲区管理</a>
+      <a href="#generative">生成式回放（伪回放）</a>
+      <a href="#gradient">梯度约束型记忆</a>
+      <a href="#dual">双记忆 / 互补学习系统</a>
+      <a href="#free">免回放（架构/正则化）方法</a>
+      <a href="#llm">LLM / Agent 记忆管理（新兴方向）</a>
+    </div>
+  </header>
+
+  <section id="survey">
+    <div class="sec-title">📚 综述类文献</div>
+    <p class="sec-desc">系统梳理持续学习中记忆/回放机制的综述与分类框架</p>
+    <table>
+      <thead><tr><th>年份</th><th>论文</th><th>会议/期刊</th></tr></thead>
+      <tbody>
+        <tr><td class="year">2024</td><td class="paper-title">Class-Incremental Learning: A Survey <span class="paper-note">涵盖 exemplar-based memory 方法分类</span></td><td><span class="venue">TPAMI</span></td></tr>
+        <tr><td class="year">2021</td><td class="paper-title">A Continual Learning Survey: Defying Forgetting in Classification Tasks</td><td><span class="venue">TPAMI</span></td></tr>
+        <tr><td class="year">2021</td><td class="paper-title">Online Continual Learning in Image Classification: An Empirical Survey</td><td><span class="venue">Neurocomputing</span></td></tr>
+        <tr><td class="year">2020</td><td class="paper-title">Continual Lifelong Learning in Natural Language Processing: A Survey <span class="paper-note">提出 Rehearsal / Pseudo-rehearsal / Regularization / Memory 四分类</span></td><td><span class="venue">COLING</span></td></tr>
+        <tr><td class="year">2020</td><td class="paper-title">Class-Incremental Learning: Survey and Performance Evaluation</td><td><span class="venue">arXiv</span></td></tr>
+        <tr><td class="year">2019</td><td class="paper-title">Continual Lifelong Learning with Neural Networks: A Review</td><td><span class="venue">Neural Networks</span></td></tr>
+        <tr><td class="year">2019</td><td class="paper-title">Three Scenarios for Continual Learning</td><td><span class="venue">arXiv</span></td></tr>
+        <tr><td class="year">2026</td><td class="paper-title">Survey on AI Memory <span class="paper-note">面向 LLM Agent 的 4W 记忆分类体系（记什么/何时记/如何检索/如何评估）</span></td><td><span class="venue">arXiv (BAI-LAB)</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="rehearsal">
+    <div class="sec-title">🗄️ 经验回放 / 样本缓冲区管理（Rehearsal, Exemplar & Buffer Selection）<span class="badge badge-replay">Replay</span></div>
+    <p class="sec-desc">存储/精选历史真实样本，核心问题是「存哪些样本」「如何检索用于回放」</p>
+    <table>
+      <thead><tr><th>年份</th><th>论文</th><th>会议</th></tr></thead>
+      <tbody>
+        <tr><td class="year">2017</td><td class="paper-title">iCaRL: Incremental Classifier and Representation Learning <span class="paper-note">羊群效应(herding)优先样本选择</span></td><td><span class="venue">CVPR</span></td></tr>
+        <tr><td class="year">2017</td><td class="paper-title">Gradient Episodic Memory for Continual Learning (GEM)</td><td><span class="venue">NeurIPS (NIPS)</span></td></tr>
+        <tr><td class="year">2019</td><td class="paper-title">Efficient Lifelong Learning with A-GEM</td><td><span class="venue">ICLR</span></td></tr>
+        <tr><td class="year">2019</td><td class="paper-title">Gradient based Sample Selection for Online Continual Learning (GSS)</td><td><span class="venue">NeurIPS</span></td></tr>
+        <tr><td class="year">2019</td><td class="paper-title">Experience Replay for Continual Learning (CLEAR)</td><td><span class="venue">NeurIPS</span></td></tr>
+        <tr><td class="year">2019</td><td class="paper-title">Online Continual Learning with Maximally Interfered Retrieval (MIR) <span class="paper-note">按干扰程度检索回放样本</span></td><td><span class="venue">NeurIPS</span></td></tr>
+        <tr><td class="year">2021</td><td class="paper-title">Rainbow Memory: Continual Learning with a Memory of Diverse Samples</td><td><span class="venue">CVPR</span></td></tr>
+        <tr><td class="year">2021</td><td class="paper-title">RMM: Reinforced Memory Management for Class-Incremental Learning <span class="paper-note">强化学习动态分配 exemplar 内存预算</span></td><td><span class="venue">NeurIPS</span></td></tr>
+        <tr><td class="year">2021</td><td class="paper-title">Gradient-based Editing of Memory Examples for Online Task-free Continual Learning</td><td><span class="venue">NeurIPS</span></td></tr>
+        <tr><td class="year">2021</td><td class="paper-title">Information-theoretic Online Memory Selection for Continual Learning</td><td><span class="venue">ICLR</span></td></tr>
+        <tr><td class="year">2021</td><td class="paper-title">Rehearsal Revealed: The Limits and Merits of Revisiting Samples in Continual Learning</td><td><span class="venue">ICCV</span></td></tr>
+        <tr><td class="year">2021</td><td class="paper-title">Continual Learning on Noisy Data Streams via Self-Purified Replay</td><td><span class="venue">ICCV</span></td></tr>
+        <tr><td class="year">2022</td><td class="paper-title">Online Coreset Selection for Rehearsal-based Continual Learning</td><td><span class="venue">ICLR</span></td></tr>
+        <tr><td class="year">2022</td><td class="paper-title">Memory Replay with Data Compression for Continual Learning <span class="paper-note">压缩存储降低缓冲区开销</span></td><td><span class="venue">ICLR</span></td></tr>
+        <tr><td class="year">2023</td><td class="paper-title">GCR: Gradient Coreset based Replay Buffer Selection for Continual Learning</td><td><span class="venue">CVPR</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="generative">
+    <div class="sec-title">🎨 生成式回放 / 伪回放（Generative & Pseudo-Rehearsal）<span class="badge badge-gen">Generative</span></div>
+    <p class="sec-desc">不存储真实样本，用生成模型（GAN/VAE/Diffusion）合成旧任务数据作为「记忆」</p>
+    <table>
+      <thead><tr><th>年份</th><th>论文</th><th>会议</th></tr></thead>
+      <tbody>
+        <tr><td class="year">1995</td><td class="paper-title">Catastrophic Forgetting, Rehearsal and Pseudorehearsal <span class="paper-note">伪回放思想起源</span></td><td><span class="venue">Connection Science</span></td></tr>
+        <tr><td class="year">2017</td><td class="paper-title">Continual Learning with Deep Generative Replay <span class="paper-note">开创 Deep Generative Replay 框架</span></td><td><span class="venue">NeurIPS</span></td></tr>
+        <tr><td class="year">2018</td><td class="paper-title">Memory Replay GANs: Learning to Generate New Categories without Forgetting</td><td><span class="venue">NeurIPS</span></td></tr>
+        <tr><td class="year">2018</td><td class="paper-title">Generative Replay with Feedback Connections as a General Strategy for Continual Learning</td><td><span class="venue">arXiv</span></td></tr>
+        <tr><td class="year">2020</td><td class="paper-title">Brain-Inspired Replay for Continual Learning with Artificial Neural Networks</td><td><span class="venue">Nature Communications</span></td></tr>
+        <tr><td class="year">2020</td><td class="paper-title">GAN Memory with No Forgetting</td><td><span class="venue">NeurIPS</span></td></tr>
+        <tr><td class="year">2021</td><td class="paper-title">Always Be Dreaming: A New Approach for Data-Free Class-Incremental Learning</td><td><span class="venue">ICCV</span></td></tr>
+        <tr><td class="year">2022</td><td class="paper-title">Learning to Imagine: Diversify Memory for Incremental Learning Using Unlabeled Data</td><td><span class="venue">CVPR</span></td></tr>
+        <tr><td class="year">2023</td><td class="paper-title">DDGR: Continual Learning with Deep Diffusion-based Generative Replay <span class="paper-note">扩散模型作为记忆生成器</span></td><td><span class="venue">ICML</span></td></tr>
+        <tr><td class="year">2023</td><td class="paper-title">Selective Amnesia: A Continual Learning Approach to Forgetting in Deep Generative Models <span class="paper-note">EWC + 生成式回放实现选择性遗忘</span></td><td><span class="venue">NeurIPS</span></td></tr>
+        <tr><td class="year">2024</td><td class="paper-title">SDDGR: Stable Diffusion-based Deep Generative Replay for Class Incremental Object Detection</td><td><span class="venue">CVPR</span></td></tr>
+        <tr><td class="year">2024</td><td class="paper-title">Online Task-Free Continual Generative and Discriminative Learning via Dynamic Cluster Memory</td><td><span class="venue">CVPR</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="gradient">
+    <div class="sec-title">📐 梯度约束型记忆（Gradient-Constrained Episodic Memory）<span class="badge badge-grad">Gradient</span></div>
+    <p class="sec-desc">用少量存储样本构造梯度约束/参考方向，防止新任务梯度更新破坏旧知识</p>
+    <table>
+      <thead><tr><th>年份</th><th>论文</th><th>会议</th></tr></thead>
+      <tbody>
+        <tr><td class="year">2017</td><td class="paper-title">Gradient Episodic Memory for Continual Learning (GEM)</td><td><span class="venue">NeurIPS</span></td></tr>
+        <tr><td class="year">2019</td><td class="paper-title">Efficient Lifelong Learning with A-GEM <span class="paper-note">用平均梯度替代二次规划，提升效率</span></td><td><span class="venue">ICLR</span></td></tr>
+        <tr><td class="year">2021</td><td class="paper-title">Flattening Sharpness for Dynamic Gradient Projection Memory Benefits Continual Learning</td><td><span class="venue">NeurIPS</span></td></tr>
+        <tr><td class="year">2022</td><td class="paper-title">Continual Learning with Recursive Gradient Optimization</td><td><span class="venue">ICLR</span></td></tr>
+        <tr><td class="year">2022</td><td class="paper-title">TRGP: Trust Region Gradient Projection for Continual Learning</td><td><span class="venue">ICLR</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="dual">
+    <div class="sec-title">🧠 双记忆 / 互补学习系统（Dual Memory & Complementary Learning Systems）<span class="badge badge-dual">Dual-Memory</span></div>
+    <p class="sec-desc">受大脑海马体-新皮层理论启发，构建短期/长期或快/慢双记忆模块协同工作</p>
+    <table>
+      <thead><tr><th>年份</th><th>论文</th><th>会议</th></tr></thead>
+      <tbody>
+        <tr><td class="year">2021</td><td class="paper-title">DualNet: Continual Learning, Fast and Slow</td><td><span class="venue">NeurIPS</span></td></tr>
+        <tr><td class="year">2022</td><td class="paper-title">Learning Fast, Learning Slow: A General Continual Learning Method based on Complementary Learning System (CLS-ER) <span class="paper-note">短期/长期语义记忆双模型 + 情景记忆</span></td><td><span class="venue">ICLR</span></td></tr>
+        <tr><td class="year">2021</td><td class="paper-title">Posterior Meta-Replay for Continual Learning</td><td><span class="venue">NeurIPS</span></td></tr>
+        <tr><td class="year">2019</td><td class="paper-title">Complementary Learning for Overcoming Catastrophic Forgetting Using Experience Replay</td><td><span class="venue">IJCAI</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="free">
+    <div class="sec-title">🚫 免回放 / 架构与正则化记忆方法（Rehearsal-Free: Architecture & Regularization）<span class="badge badge-free">Rehearsal-Free</span></div>
+    <p class="sec-desc">不显式存储历史样本，通过参数正则化、任务专属子网络或 Prompt 池承载「记忆」（隐私更友好）</p>
+    <table>
+      <thead><tr><th>年份</th><th>论文</th><th>会议</th></tr></thead>
+      <tbody>
+        <tr><td class="year">2023</td><td class="paper-title">CODA-Prompt: COntinual Decomposed Attention-based Prompting for Rehearsal-Free Continual Learning</td><td><span class="venue">CVPR</span></td></tr>
+        <tr><td class="year">2023</td><td class="paper-title">Generating Instance-level Prompts for Rehearsal-free Continual Learning (DAP)</td><td><span class="venue">ICCV</span></td></tr>
+        <tr><td class="year">2024</td><td class="paper-title">Generating Prompts in Latent Space for Rehearsal-free Continual Learning</td><td><span class="venue">ACM MM</span></td></tr>
+        <tr><td class="year">2024</td><td class="paper-title">Rehearsal-Free Modular and Compositional Continual Learning for Language Models</td><td><span class="venue">arXiv</span></td></tr>
+        <tr><td class="year">2022</td><td class="paper-title">Model Zoo: A Growing Brain That Learns Continually <span class="paper-note">动态扩展网络结构承载知识</span></td><td><span class="venue">ICLR</span></td></tr>
+        <tr><td class="year">2021</td><td class="paper-title">DER: Dynamically Expandable Representation for Class Incremental Learning</td><td><span class="venue">CVPR</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="llm">
+    <div class="sec-title">🤖 LLM / Agent 记忆管理（新兴方向）<span class="badge badge-llm">LLM-Agent</span></div>
+    <p class="sec-desc">面向大模型 Agent 的持续学习/记忆管理，从「参数级」记忆转向「外部结构化」记忆，是当前（2025-2026）研究热点，尚未形成统一的顶会体系，多以 arXiv 预印本 + 工程实践形式出现</p>
+    <table>
+      <thead><tr><th>年份</th><th>论文/项目</th><th>来源</th></tr></thead>
+      <tbody>
+        <tr><td class="year">2026</td><td class="paper-title">Survey on AI Memory <span class="paper-note">北邮 BAI-LAB，提出单/多智能体记忆架构与评估体系</span></td><td><span class="venue">arXiv</span></td></tr>
+        <tr><td class="year">2026</td><td class="paper-title">Complementary RL: 让 AI 智能体像人脑一样积累和运用经验 <span class="paper-note">阿里巴巴 & 港科大，经验记忆 + 强化学习训练</span></td><td><span class="venue">arXiv (2603.17621)</span></td></tr>
+        <tr><td class="year">2026</td><td class="paper-title">TencentDB Agent Memory <span class="paper-note">腾讯云开源，短期记忆压缩 + 长期个性化记忆</span></td><td><span class="venue">工程实践/开源项目</span></td></tr>
+        <tr><td class="year">2026</td><td class="paper-title">Cloudflare Agent Memory <span class="paper-note">托管式跨会话记忆服务，结构化记忆抽取</span></td><td><span class="venue">工程实践</span></td></tr>
+      </tbody>
+    </table>
+    <div class="note-box">⚠️ LLM/Agent 记忆管理领域演进极快，上述条目多为工程博客/预印本而非同行评审顶会论文，建议结合具体研究需求进一步跟踪 arXiv 最新提交。</div>
+  </section>
+
+  <footer>
+    资料来源：GitHub 开源文献列表（zhoudw-zdw/CIL_Survey、vanity1129/Awesome-Incremental-Learning、libo-huang/Awesome-Incremental-Generative-Learning）、公开 Web 检索及各论文官方发表信息交叉核对整理。部分年份以论文正式发表会议/期刊年份为准（可能与 arXiv 预印本年份不同）。
+  </footer>
+</div>
+</body>
+</html>
