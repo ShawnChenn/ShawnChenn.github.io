@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recommendation as Generation (RaG) — 论文解读</title>
+<style>
+  :root {
+    --bg: #f8f9fb;
+    --card-bg: #ffffff;
+    --text: #1a1a2e;
+    --text-secondary: #555;
+    --accent: #4f46e5;
+    --accent-light: #eef2ff;
+    --accent2: #0ea5e9;
+    --accent3: #f59e0b;
+    --border: #e5e7eb;
+    --radius: 12px;
+    --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+    --shadow-lg: 0 4px 24px rgba(0,0,0,.08);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    font-size: 16px;
+  }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #4338ca 100%);
+    color: #fff;
+    padding: 64px 24px 56px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle at 30% 50%, rgba(99,102,241,.15) 0%, transparent 50%),
+                radial-gradient(circle at 70% 50%, rgba(14,165,233,.1) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .hero h1 {
+    font-size: 2.4rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    position: relative;
+    z-index: 1;
+  }
+  .hero .subtitle {
+    font-size: 1.1rem;
+    opacity: .85;
+    margin-top: 12px;
+    position: relative;
+    z-index: 1;
+  }
+  .hero .meta {
+    margin-top: 20px;
+    font-size: .9rem;
+    opacity: .7;
+    position: relative;
+    z-index: 1;
+  }
+  .hero .badge-row {
+    margin-top: 18px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+  }
+  .badge {
+    display: inline-block;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: .82rem;
+    font-weight: 600;
+    background: rgba(255,255,255,.15);
+    backdrop-filter: blur(4px);
+  }
+
+  /* Container */
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 24px 60px;
+  }
+
+  /* Section */
+  .section {
+    margin-bottom: 40px;
+  }
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid var(--accent-light);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title .icon {
+    font-size: 1.4rem;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    transition: box-shadow .2s;
+  }
+  .card:hover { box-shadow: var(--shadow-lg); }
+  .card h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #1e1b4b;
+  }
+  .card p, .card li {
+    color: var(--text-secondary);
+    font-size: .95rem;
+  }
+  .card ul { padding-left: 20px; margin-top: 8px; }
+  .card li { margin-bottom: 6px; }
+
+  /* Highlight box */
+  .highlight-box {
+    background: linear-gradient(135deg, #eef2ff, #f0f9ff);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 24px 28px;
+    margin-bottom: 20px;
+  }
+  .highlight-box h3 {
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  /* Innovation grid */
+  .innovation-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .innovation-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 28px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    border-top: 4px solid var(--accent);
+    transition: transform .2s, box-shadow .2s;
+  }
+  .innovation-card:nth-child(2) { border-top-color: var(--accent2); }
+  .innovation-card:nth-child(3) { border-top-color: var(--accent3); }
+  .innovation-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+  .innovation-card .num {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--accent);
+    opacity: .2;
+    line-height: 1;
+  }
+  .innovation-card:nth-child(2) .num { color: var(--accent2); }
+  .innovation-card:nth-child(3) .num { color: var(--accent3); }
+  .innovation-card h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 6px 0 10px;
+  }
+
+  /* Architecture flow */
+  .arch-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 24px 0;
+  }
+  .arch-node {
+    background: var(--card-bg);
+    border: 2px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 14px 20px;
+    text-align: center;
+    font-weight: 600;
+    font-size: .9rem;
+    min-width: 120px;
+    box-shadow: var(--shadow);
+  }
+  .arch-node.special { border-color: var(--accent2); background: #f0f9ff; }
+  .arch-arrow {
+    font-size: 1.4rem;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* Results table */
+  .results-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    font-size: .93rem;
+  }
+  .results-table th, .results-table td {
+    padding: 12px 16px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .results-table th {
+    background: var(--accent-light);
+    color: var(--accent);
+    font-weight: 700;
+    font-size: .85rem;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+  .results-table tr:last-child td { border-bottom: none; }
+  .results-table .gain {
+    color: #059669;
+    font-weight: 700;
+  }
+
+  /* Quote */
+  blockquote {
+    border-left: 3px solid var(--accent2);
+    padding: 12px 20px;
+    margin: 16px 0;
+    background: #f0f9ff;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-style: italic;
+    color: #334155;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 32px;
+    color: #94a3b8;
+    font-size: .85rem;
+  }
+  .footer a { color: var(--accent); text-decoration: none; }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 1.6rem; }
+    .container { padding: 24px 16px 40px; }
+    .card { padding: 20px; }
+    .innovation-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<header class="hero">
+  <h1>Recommendation as Generation (RaG)</h1>
+  <p class="subtitle">将个性化视频生成与推荐统一到工业级规模的闭环框架</p>
+  <p class="meta">Yanhua Cheng, Bo Wang, Haotian Zhang, et al. &nbsp;|&nbsp; arXiv:2606.25496 &nbsp;|&nbsp; 2026</p>
+  <div class="badge-row">
+    <span class="badge">🎯 生成式推荐</span>
+    <span class="badge">🎬 个性化视频生成</span>
+    <span class="badge">🤖 多智能体协作</span>
+    <span class="badge">🏭 工业级部署</span>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- 1. 背景与动机 -->
+  <div class="section">
+    <h2 class="section-title"><span class="icon">🎯</span> 背景与动机</h2>
+
+    <div class="card">
+      <h3>传统推荐系统的根本局限</h3>
+      <p>过去十年，工业级视频推荐系统遵循「内容先行」范式：视频离线生产，推荐模型从固定内容池中检索和排序。即使是最先进的深度推荐模型（DLRM）和生成式推荐模型（GRM），也<strong>始终受限于预先生产好的视频池</strong>。当用户兴趣涉及新颖或长尾语义时，系统只能退而求其次，推荐「池子里最好的」，而非「用户真正想要的」。</p>
+    </div>
+
+    <div class="highlight-box">
+      <h3>💡 核心问题</h3>
+      <p style="font-size:1.05rem;font-weight:600;color:#1e1b4b;">推荐系统能否超越检索已有视频，直接从推断的用户兴趣中<em>生成</em>个性化视频？</p>
+    </div>
+
+    <div class="card">
+      <h3>两大核心挑战</h3>
+      <ul>
+        <li><strong>挑战一：推荐与生成的统一。</strong>推荐模型处理异构离散数据（用户画像、行为序列），而视频生成模型处理多模态连续信号（文本、图像、音频、运动）。两者数据表示和学习目标截然不同，难以将预测的用户兴趣转化为可控的视频生成。</li>
+        <li><strong>挑战二：工业级规模的高质量生成。</strong>现有视频生成模型依赖人工提示词、多阶段精修和专业后期工具，延迟高、计算成本大。为数亿用户的长尾兴趣做个性化生成，成本更是不可承受。</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 2. 核心思想 -->
+  <div class="section">
+    <h2 class="section-title"><span class="icon">💡</span> 核心思想：推荐即生成</h2>
+
+    <div class="card">
+      <h3>范式转变：从「检索」到「生成」</h3>
+      <p>RaG 提出了一种全新的推荐范式：<strong>不再从固定池中检索视频，而是直接从推断的用户兴趣中生成个性化视频</strong>。其关键思想是使用<em>解耦语义 ID（Disentangled Semantic IDs, D-SIDs）</em>作为推荐与生成之间的统一接口。</p>
+    </div>
+
+    <!-- Architecture Flow -->
+    <div class="card" style="text-align:center;">
+      <h3>RaG 整体架构流程</h3>
+      <div class="arch-flow">
+        <div class="arch-node">📹 视频<br><small>编码为 D-SIDs</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node special">🧠 GRM<br><small>预测用户兴趣 D-SIDs</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node">📋 指令模型<br><small>D-SIDs → 生成蓝图</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node special">🤖 VGA 智能体<br><small>层次化规划与精炼</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node">🎬 个性化视频</div>
+      </div>
+      <p style="font-size:.85rem;color:var(--text-secondary);margin-top:8px;">整个流程在 <strong>SCRL 跨域协同奖励学习</strong> 下联合优化，形成闭环</p>
+    </div>
+  </div>
+
+  <!-- 3. 四大创新点 -->
+  <div class="section">
+    <h2 class="section-title"><span class="icon">✨</span> 四大核心创新</h2>
+
+    <div class="innovation-grid">
+      <div class="innovation-card">
+        <div class="num">01</div>
+        <h3>解耦语义 ID (D-SIDs)</h3>
+        <p>利用多模态大语言模型（Qwen2.5-VL-7B）将每个视频编码为两组因子化的离散语义 ID：</p>
+        <ul>
+          <li><strong>内容 SID</strong>：实体、主题等语义内容</li>
+          <li><strong>创意 SID</strong>：风格、节奏、氛围等创意属性</li>
+        </ul>
+        <p>这种解耦设计使推荐端能精细建模用户兴趣，生成端能可控地生成兴趣对齐的视频。</p>
+      </div>
+
+      <div class="innovation-card">
+        <div class="num">02</div>
+        <h3>视频生成智能体 (VGAs)</h3>
+        <p>替代传统高成本的扩散模型管线，采用<strong>层次化规划与精炼框架</strong>：</p>
+        <ul>
+          <li><strong>指令模型 (IM)</strong>：将 D-SIDs 翻译为结构化生成蓝图</li>
+          <li><strong>三角色智能体</strong>：视觉构图、音频对齐、艺术效果增强</li>
+          <li>三智能体<strong>共享单一 LLM 骨干</strong>，仅通过 Prompt 和工具区分</li>
+          <li>KV-cache 复用大幅加速推理</li>
+          <li>有界反思循环（最多 2 次迭代）平衡质量与效率</li>
+        </ul>
+      </div>
+
+      <div class="innovation-card">
+        <div class="num">03</div>
+        <h3>协同跨域奖励学习 (SCRL)</h3>
+        <p>将多目标优化建模为<strong>约束策略学习问题</strong>：</p>
+        <ul>
+          <li>用户反馈作为<strong>主优化目标</strong></li>
+          <li>兴趣对齐和视频质量作为<strong>约束条件</strong></li>
+          <li>分组解耦奖励归一化 (GDPO) 解决多通道奖励尺度不匹配</li>
+          <li>PID 控制的拉格朗日更新稳定训练</li>
+        </ul>
+        <p>实现推荐与视频生成在统一闭环中协同进化。</p>
+      </div>
+
+      <div class="innovation-card" style="border-top-color:#10b981;">
+        <div class="num" style="color:#10b981;">04</div>
+        <h3>工业级规模化部署</h3>
+        <p>在<strong>4 亿+ DAU</strong> 的生产平台上部署，服务于广告变现关键场景：</p>
+        <ul>
+          <li>SID 索引缓存摊销生成成本</li>
+          <li>共享 LLM 骨干 + KV-cache 复用降低推理延迟</li>
+          <li>端到端联合训练，支持数亿用户的推荐请求</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. 技术细节 -->
+  <div class="section">
+    <h2 class="section-title"><span class="icon">🔬</span> 关键技术细节</h2>
+
+    <div class="card">
+      <h3>解耦语义视频编码器</h3>
+      <p>基于 <strong>Qwen2.5-VL-7B-Instruct</strong>，通过指令引导的解耦表示框架，将同一视频的语义内容和创意属性分离：</p>
+      <ul>
+        <li>使用内部密集描述模型 (CapModel) 生成因子化文本描述</li>
+        <li>视觉编码器提取时空语义 token，与文本描述联合编码</li>
+        <li>对比学习损失确保表示一致性</li>
+        <li>通过 <strong>RQ-KMeans</strong> 将连续嵌入量化为离散 D-SIDs</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>生成式推荐模型 (GRM)</h3>
+      <p>将推荐重新定义为<strong>自回归 token 预测</strong>：给定用户画像和交互历史，GRM 自回归地预测代表用户未来兴趣的 D-SIDs 序列。与传统 GRM 不同，RaG 将预测的 D-SIDs 作为<strong>生成式兴趣表示</strong>，直接解码为新内容，而非仅用作检索键。</p>
+    </div>
+
+    <div class="card">
+      <h3>指令模型 (IM) 与 VGA 协作</h3>
+      <p>指令模型将 D-SIDs 翻译为自然语言指令，为下游智能体提供可解释的结构化指导。三个角色智能体（视觉、音频、艺术）基于共享 LLM 骨干协同工作，通过层次化规划、多模态对齐和迭代精炼，生成高质量个性化视频。</p>
+    </div>
+  </div>
+
+  <!-- 5. 实验结果 -->
+  <div class="section">
+    <h2 class="section-title"><span class="icon">📊</span> 实验结果与业务收益</h2>
+
+    <div class="card">
+      <h3>实验设置</h3>
+      <p>在拥有 <strong>4 亿+ 日活用户</strong> 的工业级短视频平台上进行在线 A/B 测试，场景为<strong>广告变现关键业务</strong>。基线为生产环境中表现强劲的生成式推荐模型 (GRM)。</p>
+    </div>
+
+    <div class="card">
+      <h3>在线 A/B 测试结果</h3>
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th>指标</th>
+            <th>基线 (GRM)</th>
+            <th>RaG (本文)</th>
+            <th>提升</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>广告收入 (Ad Revenue)</td>
+            <td>—</td>
+            <td>—</td>
+            <td class="gain">↑ 最高 1.87%</td>
+          </tr>
+          <tr>
+            <td>用户参与度</td>
+            <td>—</td>
+            <td>—</td>
+            <td class="gain">显著提升</td>
+          </tr>
+          <tr>
+            <td>视频质量评分</td>
+            <td>—</td>
+            <td>—</td>
+            <td class="gain">与人工制作相当</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highlight-box">
+      <h3>🏆 关键结论</h3>
+      <ul style="margin:0;padding-left:20px;">
+        <li>在已有强 GRM 基线基础上，RaG 仍实现 <strong>最高 1.87% 的广告收入提升</strong></li>
+        <li>证明了「生成驱动个性化」在推荐系统中的巨大潜力</li>
+        <li>这是<strong>首个</strong>在工业级规模上将推荐与个性化视频生成有效统一的系统</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 6. 总结与展望 -->
+  <div class="section">
+    <h2 class="section-title"><span class="icon">🔮</span> 总结与展望</h2>
+
+    <div class="card">
+      <h3>RaG 的核心贡献</h3>
+      <ol style="padding-left:20px;color:var(--text-secondary);">
+        <li style="margin-bottom:8px;"><strong>范式创新</strong>：首次提出「推荐即生成」范式，将推荐从固定池检索转变为从用户兴趣直接生成个性化视频。</li>
+        <li style="margin-bottom:8px;"><strong>统一接口</strong>：D-SIDs 作为推荐与生成的共享潜在接口，解耦内容语义与创意风格，实现精细兴趣建模与可控视频生成。</li>
+        <li style="margin-bottom:8px;"><strong>工业级生成框架</strong>：VGAs 通过层次化规划、多智能体协作和迭代精炼，实现可扩展的高质量个性化视频生产。</li>
+        <li style="margin-bottom:8px;"><strong>闭环优化</strong>：SCRL 将用户反馈、兴趣对齐和视频质量统一到约束策略学习中，实现推荐与生成的协同进化。</li>
+        <li><strong>生产验证</strong>：在 4 亿+ DAU 平台上通过 A/B 测试验证，广告收入提升最高 1.87%。</li>
+      </ol>
+    </div>
+
+    <blockquote>
+      RaG 标志着推荐系统从「被动匹配已有内容」到「主动创造个性化内容」的根本性转变。闭环生成系统为个性化视频生成融入推荐开辟了全新方向。
+    </blockquote>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <p>论文来源：<a href="https://arxiv.org/abs/2606.25496" target="_blank">arXiv:2606.25496</a> &nbsp;|&nbsp; 项目主页：<a href="https://recommendation-as-generation.github.io/" target="_blank">recommendation-as-generation.github.io</a></p>
+  <p style="margin-top:6px;">Generated by BoxAI &nbsp;|&nbsp; 2026-07-01</p>
+</footer>
+
+</body>
+</html>
