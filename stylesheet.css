@@ -80,29 +80,32 @@ th,
 tr,
 p,
 a {
-  font-family: 'Lato', Verdana, Helvetica, sans-serif;
-  font-size: 14px
+  font-family: 'Inter', 'Lato', 'Avenir Next', Helvetica, sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
 }
 
 strong {
-  font-family: 'Lato', Verdana, Helvetica, sans-serif;
-  font-size: 14px;
+  font-family: 'Inter', 'Lato', 'Avenir Next', Helvetica, sans-serif;
+  font-size: 16px;
 }
 
 heading {
-  font-family: 'Lato', Verdana, Helvetica, sans-serif;
-  font-size: 22px;
+  font-family: 'Inter', 'Lato', 'Avenir Next', Helvetica, sans-serif;
+  font-size: 24px;
+  font-weight: 600;
 }
 
 papertitle {
-  font-family: 'Lato', Verdana, Helvetica, sans-serif;
-  font-size: 14px;
+  font-family: 'Inter', 'Lato', 'Avenir Next', Helvetica, sans-serif;
+  font-size: 16px;
   font-weight: 700
 }
 
 name {
-  font-family: 'Lato', Verdana, Helvetica, sans-serif;
-  font-size: 32px;
+  font-family: 'Inter', 'Lato', 'Avenir Next', Helvetica, sans-serif;
+  font-size: 36px;
+  font-weight: 600;
 }
 
 .one {
