@@ -35,10 +35,16 @@ td > img {
     }
 }
 
-#hidden_news {
-    display: none;
+#news-toggle {
+    margin-left: 40px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #1772d0;
+    cursor: pointer;
+    font: inherit;
 }
 
-#hide_news_botton {
-    cursor: pointer;
+#news-toggle:hover {
+    text-decoration: underline;
 }
