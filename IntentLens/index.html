@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IntentLens | NeurIPS 2026</title>
+  <meta name="description" content="IntentLens grounds underspecified multimodal queries with visual tools, user memory, and item evidence before efficient recommendation ranking. NeurIPS 2026.">
+  <meta property="og:title" content="IntentLens: Grounding Underspecified Multimodal Queries for Recommendation">
+  <meta property="og:description" content="A photo. A vague request. A recommendation grounded in evidence. NeurIPS 2026.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://shawnchenn.github.io/IntentLens/">
+  <meta property="og:image" content="https://shawnchenn.github.io/IntentLens/assets/teaser.webp">
+  <meta name="theme-color" content="#315cc5">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="canonical" href="https://shawnchenn.github.io/IntentLens/">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<nav class="topbar" aria-label="Main navigation"><div class="nav-inner">
+  <a class="wordmark" href="#top"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="14" cy="14" r="9"/><circle cx="14" cy="14" r="4"/><path d="m21 21 7 7M14 2v4M2 14h4"/></svg>IntentLens</a>
+  <div class="nav-links"><a href="#overview">Overview</a><a href="#benchmarks">Benchmarks</a><a href="#results">Results</a><a href="#citation">Citation</a></div>
+  <a class="home" href="../">Xiao Chen <span aria-hidden="true">↗</span></a>
+</div></nav>
+<main id="main">
+<header class="hero wrap" id="top">
+  <p class="venue">NeurIPS 2026</p>
+  <h1><span class="project-name">IntentLens</span><span class="paper-title">Grounding Underspecified Multimodal Queries<br class="desktop-break"> for Recommendation via Tool-Augmented Reasoning</span></h1>
+  <p class="authors"><a href="../">Xiao Chen</a><sup>1,*</sup><span class="sep">,</span> Dong Fang<sup>2</sup><span class="sep">,</span> Haitao Li<sup>2,*</sup><span class="sep">,</span> Qing Li<sup>1,3</sup></p>
+  <div class="affiliations"><span><sup>1</sup>The Hong Kong Polytechnic University</span><span><sup>2</sup>LightSpeed</span><span><sup>3</sup>The Hong Kong Polytechnic University Shenzhen Research Institute</span></div>
+  <p class="correspondence">* Corresponding authors</p>
+  <div class="resource-links">
+    <a class="button primary" href="assets/IntentLens.pdf"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6zM14 3v5h4M9 12h6M9 16h6"/></svg>Paper <span aria-hidden="true">↗</span></a>
+    <a class="button" href="https://arxiv.org/abs/2611.11346">arXiv <span aria-hidden="true">↗</span></a>
+    <a class="button" href="#benchmarks">Benchmarks <span aria-hidden="true">↓</span></a>
+    <a class="button" href="#citation">BibTeX <span aria-hidden="true">↓</span></a>
+  </div>
+  <p class="hero-statement">A photo. A vague request.<br><strong>A recommendation grounded in evidence.</strong></p>
+  <figure class="teaser"><a href="assets/teaser.webp" target="_blank" rel="noopener" aria-label="Open IntentLens overview figure at full resolution"><img src="assets/teaser.webp" width="1796" height="440" alt="A reference café image and a vague request are resolved with visual tools, user memory and item attributes, then used to rank matching cafés."></a><figcaption>Go beyond what the user says. Recover visual preferences, personal context, and item constraints <strong>before ranking.</strong></figcaption></figure>
+</header>
+<section class="abstract band" id="abstract"><div class="prose">
+  <p class="eyebrow">The idea</p><h2>Abstract</h2>
+  <p>As intelligent personal assistants are increasingly deployed in real-world environments, recommendations move from passive preference matching to grounding user intent from underspecified multimodal evidence. In these settings, users often provide only a reference image and a fuzzy natural-language query, leaving crucial visual attributes, personalized preferences, and item-side constraints implicit. Existing recommenders either rely on historical interactions enriched with multimodal item features or presuppose fully specified textual requests, which are insufficient to resolve such queries for accurate item matching.</p>
+  <p>To bridge this gap, we present <strong>IntentLens</strong>, a tool-augmented recommendation framework that grounds underspecified multimodal queries into query-relevant evidence before user-item matching. IntentLens adopts a <strong>ground-then-rank</strong> design: a shared multimodal LLM orchestrates visual, user-memory, and item-attribute tools to (i) recover latent user intent from the image and language query, and (ii) enrich each candidate with fine-grained, query-conditioned evidence; a lightweight ranker then scores candidates over the grounded representations. To support this new setting, we further construct two benchmarks with underspecified multimodal queries, <strong>GoogleReview-MMTool</strong> and <strong>Yelp-MMTool</strong>. Comprehensive experiments on the constructed benchmarks show that IntentLens outperforms strong MLLM and retrieval baselines, and remains robust across unseen categories and datasets.</p>
+</div></section>
+<section class="wrap section" id="overview">
+  <div class="section-heading"><p class="eyebrow">01 / Framework</p><h2>Ground first. Rank efficiently.</h2><p>Separate evidence acquisition from candidate scoring.</p></div>
+  <figure class="framework"><a href="assets/framework.webp" target="_blank" rel="noopener" aria-label="Open framework figure at full resolution"><img src="assets/framework.webp" width="1582" height="804" loading="lazy" alt="IntentLens inference pipeline: an MLLM plans tools and grounds the query, deterministic tools enrich candidate attributes, and a lightweight dual encoder ranks items."></a><figcaption>The MLLM handles intent disambiguation and tool selection. Candidate enrichment runs in a decoupled pass, followed by a lightweight dual-encoder ranker. Click the figure to enlarge.</figcaption></figure>
+  <div class="steps">
+    <article><span class="step-number">01</span><h3>Recover intent</h3><p>Visual analysis reveals cues such as color and ambience. Episodic and semantic memories recover the user’s experiences and longer-term preferences.</p></article>
+    <article><span class="step-number">02</span><h3>Enrich candidates</h3><p>Query-selected tools expose cached attributes and review evidence, including location, price, ratings, and opening hours, without extra MLLM calls for each candidate.</p></article>
+    <article><span class="step-number">03</span><h3>Rank with evidence</h3><p>A dual encoder matches the grounded query with enriched item descriptions. Ranker-aligned reinforcement fine-tuning teaches the planner which evidence improves recommendations.</p></article>
+  </div>
+  <aside class="training-note"><span class="note-symbol" aria-hidden="true">↗</span><div><h3>Reward evidence that actually helps</h3><p>A counterfactual ranking reward compares each grounded rollout against no-evidence baselines. Observation-masked GRPO trains the model’s decisions while excluding tool-returned observation tokens from the policy loss.</p></div></aside>
+</section>
+<section class="band" id="benchmarks"><div class="wrap section">
+  <div class="section-heading"><p class="eyebrow">02 / Benchmarks</p><h2>When the request leaves things unsaid</h2><p>Two benchmarks pair reference images with underspecified requests, user histories, and candidate businesses.</p></div>
+  <div class="table-scroll" tabindex="0" role="region" aria-label="Benchmark statistics"><table class="data-table"><caption>Benchmark statistics · Paper, Table 3</caption><thead><tr><th scope="col">Benchmark</th><th scope="col">Users</th><th scope="col">Interactions</th><th scope="col">Queries</th><th scope="col">Categories</th><th scope="col">Avg. candidates</th></tr></thead><tbody><tr><th scope="row">GoogleReview-MMTool</th><td>3,000</td><td>104,025</td><td>773</td><td>1,556</td><td>40</td></tr><tr><th scope="row">Yelp-MMTool</th><td>2,315</td><td>94,184</td><td>1,727</td><td>497</td><td>63</td></tr></tbody></table></div>
+  <div class="benchmark-detail"><div><h3>Four levels of evidence</h3><ol class="tiers"><li><span>T1</span>Visual</li><li><span>T2</span>Visual + memory</li><li><span>T3</span>Visual + item attributes</li><li><span>T4</span>Visual + memory + item attributes</li></ol></div><div><h3>Designed to test intent grounding</h3><p>Candidate pools include visually similar, memory-conflicting, and context-conflicting hard negatives. A positive item must jointly satisfy textual relevance, visual alignment, user preferences, and item-side constraints.</p><p class="small">400 queries were independently audited by three annotators; 93.5% passed the majority-vote quality criteria. See the paper for synthesis, validation, and evaluation details.</p></div></div>
+</div></section>
+<section class="wrap section" id="results">
+  <div class="section-heading"><p class="eyebrow">03 / Experiments</p><h2>Better recommendations through grounding</h2><p>IntentLens-7B achieves the best Hit@10 among evaluated non-oracle methods on both benchmarks.</p></div>
+  <div class="highlights"><div><span class="metric-label">GoogleReview-MMTool · Hit@10</span><strong>62.1<span>%</span></strong><span>IntentLens-7B · ± 1.1</span></div><div><span class="metric-label">Yelp-MMTool · Hit@10</span><strong>70.4<span>%</span></strong><span>IntentLens-7B · ± 0.8</span></div><div><span class="metric-label">Yelp-MMTool · MRR</span><strong>46.7<span>%</span></strong><span>IntentLens-7B · ± 1.1</span></div></div>
+  <div class="result-header"><h3>Main results</h3><label class="dataset-select">Benchmark <select id="dataset"><option value="google">GoogleReview-MMTool</option><option value="yelp">Yelp-MMTool</option></select></label></div>
+  <div class="table-scroll" tabindex="0" role="region" aria-label="Main experiment results"><table class="data-table results-table"><caption id="results-caption">GoogleReview-MMTool · Selected baselines from Table 2 · All values in %</caption><thead><tr><th scope="col">Method</th><th scope="col">Hit@1</th><th scope="col">Hit@3</th><th scope="col">Hit@10</th><th scope="col">MRR</th></tr></thead><tbody id="results-body">
+<tr><th scope="row">CLIP Retrieval</th><td>3.5</td><td>13.8</td><td>24.1</td><td>12.8</td></tr>
+<tr><th scope="row">BGE Retrieval</th><td>13.8</td><td>27.6</td><td>37.9</td><td>25.7</td></tr>
+<tr><th scope="row">UniMP</th><td>24.1</td><td>31.0</td><td>61.4</td><td>33.9</td></tr>
+<tr><th scope="row">Qwen2.5-VL-7B (zero-shot)</th><td>13.8</td><td>31.0</td><td>58.6</td><td>28.0</td></tr>
+<tr><th scope="row">GPT-5.4 (with evidence)</th><td>31.0</td><td>44.8</td><td>55.2</td><td>41.6</td></tr>
+<tr><th scope="row">GPT-4o</th><td>30.9</td><td>33.6</td><td>40.4</td><td>36.8</td></tr>
+<tr class="ours"><th scope="row">IntentLens-7B</th><td>31.0 ± 1.7</td><td>44.8 ± 1.4</td><td>62.1 ± 1.1</td><td>40.2 ± 1.2</td></tr>
+<tr class="oracle"><th scope="row">Oracle Ranker</th><td>37.9</td><td>41.4</td><td>65.5</td><td>44.4</td></tr>
+  </tbody></table></div>
+  <p id="results-status" class="sr-only" aria-live="polite"></p>
+  <p class="small table-note">IntentLens results are reported over five runs. The oracle uses annotated grounding inputs and is a reference upper bound. See Table 2 in the paper for the complete comparison.</p>
+  <div class="findings"><div><h3>Every evidence source matters</h3><p>Removing query grounding reduces GoogleReview MRR from <strong>40.2 to 33.5</strong>. Removing visual, memory, or item tools also lowers performance.</p></div><div><h3>Grounding transfers</h3><p>On 78 verified human-written requests, IntentLens-7B outperforms BGE by <strong>7.3 MRR points</strong>, with fixed candidate pools and no retraining.</p></div><div><h3>Efficient candidate scoring</h3><p>The pipeline takes approximately <strong>4.1 seconds per query</strong> on one NVIDIA H20: 3,590 ms for planning and tool execution, plus 515 ms for ranking.</p></div></div>
+</section>
+<section class="band citation-band" id="citation"><div class="wrap section">
+  <div class="section-heading"><p class="eyebrow">04 / Citation</p><h2>BibTeX</h2><p>If you find this work useful, please consider citing our paper.</p></div>
+  <div class="code-block"><button id="copy-citation" type="button">Copy BibTeX</button><pre><code id="bibtex">@misc{chen2026intentlens,
+  title={IntentLens: Grounding Underspecified Multimodal Queries
+         for Recommendation via Tool-Augmented Reasoning},
+  author={Xiao Chen and Dong Fang and Haitao Li and Qing Li},
+  year={2026},
+  eprint={2611.11346},
+  archivePrefix={arXiv},
+  primaryClass={cs.IR},
+  url={https://arxiv.org/abs/2611.11346}
+}</code></pre></div><p id="copy-status" class="copy-status" role="status"></p>
+</div></section>
+</main>
+<footer class="wrap"><a class="footer-brand" href="#top">IntentLens</a><p>NeurIPS 2026 · <a href="../">Xiao Chen</a></p><p class="credits">Layout inspired by <a href="https://ingrid789.github.io/SkillMimic/">SkillMimic</a>. Figures and results from the IntentLens paper.</p><a class="back-top" href="#top">Back to top ↑</a></footer>
+</body>
+</html>
